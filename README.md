@@ -1,237 +1,279 @@
 # Inventory Management System
 
-A full-stack MERN (MongoDB, Express.js, React.js, Node.js) application for managing inventory, sales, and suppliers for small businesses.
+A full-stack MERN (MongoDB, Express, React, Node.js) inventory management system with role-based access control, real-time inventory tracking, and comprehensive reporting features.
 
-## Features
-
-### Backend
-
-- RESTful API with proper HTTP methods and status codes
-- MongoDB with Mongoose ODM including relationships
-- JWT-based authentication and authorization
-- Role-based access control (Admin, Manager, Staff)
-- Data validation and error handling
-- Pagination, filtering, and searching
-- File upload capability for product images
-- Environment variables for configuration
-
-### Frontend
-
-- Responsive design (mobile-friendly)
-- State management with Context API
-- Form handling with validation
-- Protected routes based on user roles
-- API integration with Axios
-- Clean, modular component structure
-- Loading states and user feedback
+## ✨ Features
 
 ### Core Functionality
 
-- **User Management**: Register, login, role-based access
-- **Product Management**: CRUD operations, stock tracking, low stock alerts
-- **Sales Management**: Create sales, track transactions, inventory updates
-- **Supplier Management**: Manage supplier information
-- **Reports & Dashboard**: Sales analytics, inventory statistics, top products
+- 📦 **Product Management** - Add, edit, delete, and track products
+- 🏷️ **Category Management** - Organize products by categories
+- 🏢 **Supplier Management** - Manage supplier information
+- 💰 **Sales Processing** - Create sales with automatic inventory deduction
+- 📋 **Purchase Orders** - Create and manage purchase orders
+- 🔄 **Returns Processing** - Handle product returns with inventory restoration
+- 📊 **Stock Adjustments** - Manual inventory adjustments with audit trail
+- 💸 **Expense Tracking** - Track business expenses by category
+- 📈 **Reports & Analytics** - Dashboard with sales and inventory insights
+- 📤 **Export Functionality** - Export data to CSV and PDF
 
-## Tech Stack
+### Security & Access Control
 
-### Backend
+- 🔐 **JWT Authentication** - Secure token-based authentication
+- 👥 **Role-Based Access** - Admin, Manager, and Staff roles
+- 🛡️ **Rate Limiting** - Protection against brute force attacks
+- 🔒 **Input Sanitization** - NoSQL injection prevention
+- 🎯 **CORS Protection** - Configured for specific origins
+- 📝 **Activity Logging** - Complete audit trail of all operations
 
-- Node.js
-- Express.js
-- MongoDB with Mongoose
-- JWT for authentication
-- bcryptjs for password hashing
-- Multer for file uploads
+### User Experience
 
-### Frontend
+- 🎨 **Modern UI** - Clean, professional interface
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+- ⚡ **Fast Performance** - Optimized for speed
+- 🔍 **Search & Filter** - Easy data discovery
+- 📄 **Pagination** - Efficient data loading
+- 🎯 **Real-time Updates** - Instant inventory updates
 
-- React.js
-- React Router for navigation
-- Context API for state management
-- Axios for API calls
-- React Icons
-
-## Installation
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js 18+ and npm 9+
 - MongoDB (local or Atlas)
-- npm or yarn
+- Git
 
-### Backend Setup
+### Local Development
 
-1. Navigate to backend directory:
+1. **Clone the repository**
 
-```bash
-cd backend
-```
+   ```bash
+   git clone https://github.com/yourusername/inventory-management.git
+   cd inventory-management
+   ```
 
-2. Install dependencies:
+2. **Setup Backend**
 
-```bash
-npm install
-```
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Edit .env with your MongoDB URI and JWT secret
+   npm run seed  # Optional: seed database with sample data
+   npm run dev
+   ```
 
-3. Create .env file:
+3. **Setup Frontend**
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
 
-4. Update .env with your configuration:
+4. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:5000
 
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/inventory_db
-JWT_SECRET=your_secret_key_here
-NODE_ENV=development
-```
+### Default Login Credentials
 
-5. Start the server:
+After seeding the database:
 
-```bash
-npm run dev
-```
+- **Admin**: admin@inventory.com / admin123
+- **Manager**: manager@inventory.com / manager123
+- **Staff**: staff@inventory.com / staff123
 
-### Frontend Setup
+## 🌐 Free Deployment
 
-1. Navigate to frontend directory:
+Deploy both frontend and backend completely free! See our deployment guides:
 
-```bash
-cd frontend
-```
+- **Quick Deploy (5 minutes)**: [QUICK_DEPLOY.md](QUICK_DEPLOY.md)
+- **Detailed Guide**: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 
-2. Install dependencies:
+### Recommended Free Hosting
 
-```bash
-npm install
-```
+- **Backend**: Render.com (Free tier)
+- **Database**: MongoDB Atlas (Free 512MB)
+- **Frontend**: Vercel or Netlify (Free tier)
 
-3. Create .env file (optional):
+**Total Cost: $0/month** 💰
 
-```
-REACT_APP_API_URL=http://localhost:5000/api
-```
-
-4. Start the development server:
-
-```bash
-npm start
-```
-
-## API Endpoints
-
-### Authentication
-
-- POST /api/auth/register - Register new user
-- POST /api/auth/login - Login user
-- GET /api/auth/profile - Get user profile (Protected)
-
-### Products
-
-- GET /api/products - Get all products (with pagination & filters)
-- GET /api/products/:id - Get single product
-- POST /api/products - Create product (Admin/Manager)
-- PUT /api/products/:id - Update product (Admin/Manager)
-- DELETE /api/products/:id - Delete product (Admin)
-
-### Sales
-
-- GET /api/sales - Get all sales
-- GET /api/sales/:id - Get single sale
-- POST /api/sales - Create sale
-
-### Suppliers
-
-- GET /api/suppliers - Get all suppliers
-- POST /api/suppliers - Create supplier (Admin/Manager)
-- PUT /api/suppliers/:id - Update supplier (Admin/Manager)
-- DELETE /api/suppliers/:id - Delete supplier (Admin)
-
-### Reports
-
-- GET /api/reports/dashboard - Get dashboard statistics
-- GET /api/reports/sales - Get sales report (Admin/Manager)
-
-## User Roles
-
-- **Admin**: Full access to all features
-- **Manager**: Can manage products, suppliers, and view reports
-- **Staff**: Can view products, create sales
-
-## Default Test Users
-
-After seeding the database, you can use:
-
-- Admin: admin@example.com / password123
-- Manager: manager@example.com / password123
-- Staff: staff@example.com / password123
-
-## Deployment
-
-### Backend Deployment (Heroku/Railway)
-
-1. Set environment variables
-2. Deploy using Git
-3. Ensure MongoDB connection string is configured
-
-### Frontend Deployment (Vercel/Netlify)
-
-1. Build the project: `npm run build`
-2. Deploy the build folder
-3. Set API URL environment variable
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-inventory-management-system/
-├── backend/
-│   ├── config/          # Database configuration
-│   ├── controllers/     # Route controllers
-│   ├── models/          # Mongoose models
-│   ├── routes/          # API routes
-│   ├── middleware/      # Auth & error handling
-│   ├── utils/           # Helper functions
-│   └── server.js        # Entry point
-├── frontend/
-│   ├── public/          # Static files
-│   └── src/
-│       ├── components/  # Reusable components
-│       ├── pages/       # Page components
-│       ├── context/     # Context providers
-│       ├── services/    # API services
-│       └── App.js       # Main app component
-└── README.md
+inventory-management/
+├── backend/                 # Node.js/Express backend
+│   ├── config/             # Database configuration
+│   ├── controllers/        # Route controllers
+│   ├── middleware/         # Custom middleware
+│   ├── models/             # Mongoose models
+│   ├── routes/             # API routes
+│   ├── utils/              # Utility functions
+│   ├── uploads/            # File uploads
+│   └── server.js           # Entry point
+├── frontend/               # React frontend
+│   ├── public/            # Static files
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   ├── context/       # React context
+│   │   ├── pages/         # Page components
+│   │   ├── services/      # API services
+│   │   └── App.js         # Main app component
+│   └── package.json
+├── DEPLOYMENT_GUIDE.md    # Detailed deployment guide
+├── QUICK_DEPLOY.md        # Quick deployment guide
+└── README.md              # This file
 ```
 
-## Features Checklist
+## 🔧 Technology Stack
 
 ### Backend
 
-- ✅ RESTful API with proper HTTP methods
-- ✅ MongoDB with Mongoose ODM
-- ✅ Authentication & Authorization
-- ✅ Data validation and error handling
-- ✅ File upload capability
-- ✅ Pagination, filtering, searching
-- ✅ Environment variables
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT (JSON Web Tokens)
+- **Security**: Helmet, express-rate-limit, mongo-sanitize, hpp
+- **File Upload**: Multer
+- **Export**: json2csv, PDFKit
+- **Validation**: express-validator
 
 ### Frontend
 
-- ✅ Responsive design
-- ✅ State management (Context API)
-- ✅ Form handling with validation
-- ✅ Protected routes
-- ✅ API integration
-- ✅ Modular component structure
-- ✅ Loading states and feedback
+- **Framework**: React 18
+- **Routing**: React Router v6
+- **HTTP Client**: Axios
+- **Styling**: Custom CSS with CSS Variables
+- **State Management**: Context API
 
-## License
+## 📚 API Documentation
 
-MIT
+### Authentication Endpoints
 
-## Author
+```
+POST   /api/auth/register    - Register new user
+POST   /api/auth/login       - Login user
+GET    /api/auth/profile     - Get user profile
+```
 
-MERN Stack Developer
+### Product Endpoints
+
+```
+GET    /api/products         - Get all products (with pagination)
+GET    /api/products/:id     - Get single product
+POST   /api/products         - Create product (Admin/Manager)
+PUT    /api/products/:id     - Update product (Admin/Manager)
+DELETE /api/products/:id     - Delete product (Admin)
+```
+
+### Sales Endpoints
+
+```
+GET    /api/sales            - Get all sales
+GET    /api/sales/:id        - Get single sale
+POST   /api/sales            - Create sale
+```
+
+### Additional Endpoints
+
+- Categories: `/api/categories`
+- Suppliers: `/api/suppliers`
+- Purchase Orders: `/api/purchase-orders`
+- Returns: `/api/returns`
+- Stock Adjustments: `/api/stock-adjustments`
+- Expenses: `/api/expenses`
+- Reports: `/api/reports`
+- Exports: `/api/exports`
+- Activity Logs: `/api/activity-logs`
+
+## 🔐 Security Features
+
+- ✅ JWT token-based authentication
+- ✅ Password hashing with bcrypt
+- ✅ Role-based access control (RBAC)
+- ✅ Rate limiting on authentication endpoints
+- ✅ NoSQL injection prevention
+- ✅ XSS protection via Helmet
+- ✅ CORS configuration
+- ✅ Input validation and sanitization
+- ✅ Activity logging and audit trail
+- ✅ Secure file upload handling
+
+See [backend/SECURITY.md](backend/SECURITY.md) for detailed security documentation.
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd backend
+npm test                 # Run all tests
+npm run test:watch      # Watch mode
+npm run test:coverage   # Coverage report
+```
+
+## 📊 Database Schema
+
+### Main Collections
+
+- **Users** - User accounts with roles
+- **Products** - Product inventory
+- **Categories** - Product categories
+- **Suppliers** - Supplier information
+- **Sales** - Sales transactions
+- **PurchaseOrders** - Purchase orders
+- **Returns** - Product returns
+- **StockAdjustments** - Inventory adjustments
+- **Expenses** - Business expenses
+- **ActivityLogs** - Audit trail
+
+## 🎨 Theme
+
+The application features a clean, professional light theme with:
+
+- Indigo blue primary color (#4f46e5)
+- Light backgrounds for better readability
+- Subtle shadows and transitions
+- Responsive design for all devices
+
+See [FRONTEND_THEME_UPDATE.md](FRONTEND_THEME_UPDATE.md) for theme details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the ISC License.
+
+## 🙏 Acknowledgments
+
+- MongoDB Atlas for free database hosting
+- Render.com for free backend hosting
+- Vercel for free frontend hosting
+- All open-source contributors
+
+## 🗺️ Roadmap
+
+- [ ] Dark mode toggle
+- [ ] Multi-language support
+- [ ] Advanced analytics dashboard
+- [ ] Email notifications
+- [ ] Barcode scanning
+- [ ] Mobile app (React Native)
+- [ ] Two-factor authentication
+- [ ] Automated backup system
+
+## 📈 Changelog
+
+See [backend/CHANGELOG.md](backend/CHANGELOG.md) for version history and changes.
+
+---
+
+**Built with ❤️ using the MERN stack**
