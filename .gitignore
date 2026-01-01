@@ -30,8 +30,9 @@ Thumbs.db
 *.swp
 *.swo
 
-# Uploads
-backend/uploads/
+# Uploads (keep folder, ignore contents)
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # Testing
 coverage/

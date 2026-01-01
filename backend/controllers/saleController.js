@@ -1,73 +1,83 @@
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const asyncHandler = require('../middleware/asyncHandler');
+const mongoose = require('mongoose');
 
 // @desc    Get all sales
 // @route   GET /api/sales
 // @access  Private
-const getSales = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+const getSales = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
-    const query = {};
+  const query = {};
 
-    if (req.query.status) {
-      query.status = req.query.status;
-    }
-
-    if (req.query.startDate && req.query.endDate) {
-      query.createdAt = {
-        $gte: new Date(req.query.startDate),
-        $lte: new Date(req.query.endDate)
-      };
-    }
-
-    const total = await Sale.countDocuments(query);
-    const sales = await Sale.find(query)
-      .populate('items.product', 'name sku')
-      .populate('createdBy', 'name')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    res.json({
-      sales,
-      page,
-      pages: Math.ceil(total / limit),
-      total
-    });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  if (req.query.status) {
+    query.status = req.query.status;
   }
-};
+
+  if (req.query.startDate && req.query.endDate) {
+    query.createdAt = {
+      $gte: new Date(req.query.startDate),
+      $lte: new Date(req.query.endDate)
+    };
+  }
+
+  const total = await Sale.countDocuments(query);
+  const sales = await Sale.find(query)
+    .populate('items.product', 'name sku')
+    .populate('createdBy', 'name')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  res.json({
+    sales,
+    page,
+    pages: Math.ceil(total / limit),
+    total
+  });
+});
 
 // @desc    Create sale
 // @route   POST /api/sales
 // @access  Private
-const createSale = async (req, res) => {
-  try {
-    const { items, customerName, customerEmail, paymentMethod } = req.body;
+const createSale = asyncHandler(async (req, res) => {
+  const { items, customerName, customerEmail, paymentMethod } = req.body;
 
+  // Validation
+  if (!items || items.length === 0) {
+    res.status(400);
+    throw new Error('At least one item is required');
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
     // Validate stock availability
     for (let item of items) {
-      const product = await Product.findById(item.product);
+      const product = await Product.findById(item.product).session(session);
       if (!product) {
-        return res.status(404).json({ message: `Product ${item.product} not found` });
+        throw new Error(`Product ${item.product} not found`);
+      }
+      if (!product.isActive) {
+        throw new Error(`Product ${product.name} is not active`);
       }
       if (product.quantity < item.quantity) {
-        return res.status(400).json({ 
-          message: `Insufficient stock for ${product.name}. Available: ${product.quantity}` 
-        });
+        throw new Error(
+          `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${item.quantity}`
+        );
       }
     }
 
-    // Calculate totals
+    // Calculate totals and prepare sale items
     let totalAmount = 0;
     const saleItems = [];
 
     for (let item of items) {
-      const product = await Product.findById(item.product);
+      const product = await Product.findById(item.product).session(session);
       const itemTotal = product.price * item.quantity;
       totalAmount += itemTotal;
 
@@ -80,47 +90,53 @@ const createSale = async (req, res) => {
 
       // Update product quantity
       product.quantity -= item.quantity;
-      await product.save();
+      await product.save({ session });
     }
 
     // Generate sale number
     const saleCount = await Sale.countDocuments();
     const saleNumber = `SALE-${Date.now()}-${saleCount + 1}`;
 
-    const sale = await Sale.create({
+    const sale = await Sale.create([{
       saleNumber,
       items: saleItems,
       totalAmount,
       customerName,
       customerEmail,
-      paymentMethod,
+      paymentMethod: paymentMethod || 'cash',
       createdBy: req.user._id
-    });
+    }], { session });
 
-    res.status(201).json(sale);
+    await session.commitTransaction();
+
+    const populatedSale = await Sale.findById(sale[0]._id)
+      .populate('items.product', 'name sku')
+      .populate('createdBy', 'name');
+
+    res.status(201).json(populatedSale);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-};
+});
 
 // @desc    Get sale by ID
 // @route   GET /api/sales/:id
 // @access  Private
-const getSaleById = async (req, res) => {
-  try {
-    const sale = await Sale.findById(req.params.id)
-      .populate('items.product')
-      .populate('createdBy', 'name');
+const getSaleById = asyncHandler(async (req, res) => {
+  const sale = await Sale.findById(req.params.id)
+    .populate('items.product')
+    .populate('createdBy', 'name');
 
-    if (!sale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
-
-    res.json(sale);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  if (!sale) {
+    res.status(404);
+    throw new Error('Sale not found');
   }
-};
+
+  res.json(sale);
+});
 
 module.exports = {
   getSales,

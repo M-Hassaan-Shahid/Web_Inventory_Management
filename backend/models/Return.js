@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const saleItemSchema = new mongoose.Schema({
+const returnItemSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
@@ -21,39 +21,40 @@ const saleItemSchema = new mongoose.Schema({
     }
 });
 
-const saleSchema = new mongoose.Schema({
-    saleNumber: {
+const returnSchema = new mongoose.Schema({
+    returnNumber: {
         type: String,
         required: true,
         unique: true
     },
-    items: [saleItemSchema],
-    totalAmount: {
+    sale: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Sale',
+        required: true
+    },
+    items: [returnItemSchema],
+    totalRefund: {
         type: Number,
         required: true
     },
-    customerName: {
+    reason: {
+        type: String,
+        enum: ['defective', 'wrong_item', 'customer_request', 'other'],
+        required: true
+    },
+    reasonDetails: {
         type: String,
         trim: true
     },
-    customerEmail: {
+    refundMethod: {
         type: String,
-        trim: true
-    },
-    paymentMethod: {
-        type: String,
-        enum: ['cash', 'card', 'online'],
-        default: 'cash'
+        enum: ['cash', 'card', 'store_credit'],
+        required: true
     },
     status: {
         type: String,
-        enum: ['completed', 'pending', 'cancelled'],
-        default: 'completed'
-    },
-    returnStatus: {
-        type: String,
-        enum: ['none', 'partially_returned', 'fully_returned'],
-        default: 'none'
+        enum: ['pending', 'approved', 'completed'],
+        default: 'pending'
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -64,4 +65,8 @@ const saleSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('Sale', saleSchema);
+returnSchema.index({ returnNumber: 1 });
+returnSchema.index({ sale: 1 });
+returnSchema.index({ createdAt: -1 });
+
+module.exports = mongoose.model('Return', returnSchema);
